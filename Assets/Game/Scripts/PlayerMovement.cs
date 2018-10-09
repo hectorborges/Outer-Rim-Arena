@@ -65,8 +65,10 @@ public class PlayerMovement : MonoBehaviour
         if (Player.AbilityInUse)
         {
             if(inAir)
-                rb.velocity = new Vector3(currentVelocity.x, rb.velocity.y, currentVelocity.z) * rootMotionForce;
+            rb.velocity = new Vector3(currentVelocity.x, rb.velocity.y, currentVelocity.z) * rootMotionForce;
             Fall();
+            Jump();
+            //Rotate();
             return;
         }
         Movement();
@@ -148,9 +150,9 @@ public class PlayerMovement : MonoBehaviour
 
     void Jump()
     {
-        if (isJumping && Grounded() || isJumping && jumpCount == 1)
+        if (isJumping && Grounded() || isJumping && jumpCount <= 3)
         {
-            if (jumpCount == 1)
+            if (jumpCount >= 1)
             {
                 print("Double Jump");
                 anim.SetTrigger("Jump");
@@ -158,10 +160,18 @@ public class PlayerMovement : MonoBehaviour
 
             jumpCount++;
 
-            if(jumpCount == 1)
-                rb.velocity = new Vector3(rb.velocity.x, jumpForce, rb.velocity.z);
-            else
-                rb.velocity = new Vector3(rb.velocity.x, (jumpForce * 1.5f), rb.velocity.z);
+            switch(jumpCount)
+            {
+                case 1:
+                    rb.velocity = new Vector3(rb.velocity.x, jumpForce, rb.velocity.z);
+                    break;
+                case 2:
+                    rb.velocity = new Vector3(rb.velocity.x, (jumpForce * 1.5f), rb.velocity.z);
+                    break;
+                case 3:
+                    rb.velocity = new Vector3(rb.velocity.x, (jumpForce * 3), rb.velocity.z);
+                    break;
+            }
         }
     }
 

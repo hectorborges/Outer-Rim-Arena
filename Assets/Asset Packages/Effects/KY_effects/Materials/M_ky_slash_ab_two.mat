@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: M_ky_slash_ab_two
-  m_Shader: {fileID: 4800000, guid: b43c86db227e248ac8462420988cbc86, type: 3}
+  m_Shader: {fileID: 4800000, guid: f8f24f9fc62964844b4623f583f9aef6, type: 3}
   m_ShaderKeywords: _EMISSION _FRESNELOFF_ON _HAVEALPHA_ON
   m_LightmapFlags: 1
   m_EnableInstancingVariants: 0
@@ -114,5 +114,8 @@ Material:
     - _useTexColor: 0
     - _vertColorDensity: 1
     m_Colors:
+    - _BorderScale: {r: 0.5, g: 0.05, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _TimeScale: {r: 1, g: 1, b: 1, a: 1}
+    - _TintColor: {r: 0, g: 0, b: 0, a: 1}

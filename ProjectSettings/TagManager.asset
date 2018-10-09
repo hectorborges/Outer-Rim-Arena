@@ -16,10 +16,10 @@ TagManager:
   - PostProcessing
   - Ground
   - CustomPostEffectIgnore
-  - 
-  - 
-  - 
-  - 
+  - FogVolumeShadowCaster
+  - FogVolume
+  - FogVolumeSurrogate
+  - FogVolumeUniform
   - 
   - 
   - 
