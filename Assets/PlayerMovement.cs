@@ -35,10 +35,11 @@ public class PlayerMovement : MonoBehaviour
 
     bool isJumping;
     bool isSprinting;
+    int jumpCount;
 
     Rigidbody rb;
     Animator anim;
-
+    Vector3 currentVelocity;
     public static bool inAir;
 
     private void Start()
@@ -53,22 +54,24 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        if (Player.AbilityInUse) return;
         RecieveInput();
     }
 
     private void LateUpdate()
     {
+        print("Grounded = " + Grounded());
+        if (Player.AbilityInUse)
+        {
+            if(inAir)
+                rb.velocity = new Vector3(currentVelocity.x, rb.velocity.y, currentVelocity.z);
+            Fall();
+            return;
+        }
         Movement();
         Rotate();
         Jump();
-
-        if (!Grounded())
-        {
-            inAir = true;
-            Fall();
-        }
-        else
-            inAir = false;
+        CheckGround();
     }
 
     void RecieveInput()
@@ -108,7 +111,25 @@ public class PlayerMovement : MonoBehaviour
             anim.SetFloat("Speed", speed, sprintAnimationSmoothTime, Time.deltaTime);
 
         anim.SetInteger("VerticalVelocity", (int)rb.velocity.y  * 2);
+        currentVelocity = rb.velocity;
+    }
+
+    void CheckGround()
+    {
+        inAir = !Grounded();
         anim.SetBool("InAir", inAir);
+        if (!Grounded())
+        {
+            Fall();
+        }
+        else
+        {
+            if (jumpCount > 1)
+            {
+                jumpCount = 0;
+                anim.ResetTrigger("Jump");
+            }
+        }
     }
 
     void Rotate()
@@ -121,14 +142,25 @@ public class PlayerMovement : MonoBehaviour
         Vector3 targetDirection = new Vector3(horizontal, 0f, vertical);
         targetDirection = Camera.main.transform.TransformDirection(targetDirection);
         targetDirection.y = 0.0f;
-        transform.rotation = Quaternion.LookRotation(targetDirection);
+        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(targetDirection), rotationSpeed * Time.deltaTime);
     }
 
     void Jump()
     {
-        if (isJumping && Grounded())
+        if (isJumping && Grounded() || isJumping && jumpCount == 1)
         {
-            rb.velocity = new Vector3(rb.velocity.x, jumpForce, rb.velocity.z);
+            if (jumpCount == 1)
+            {
+                print("Double Jump");
+                anim.SetTrigger("Jump");
+            }
+
+            jumpCount++;
+
+            if(jumpCount == 1)
+                rb.velocity = new Vector3(rb.velocity.x, jumpForce, rb.velocity.z);
+            else
+                rb.velocity = new Vector3(rb.velocity.x, (jumpForce * 1.5f), rb.velocity.z);
         }
     }
 
