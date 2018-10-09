@@ -22,6 +22,18 @@ public class PlayerMovement : MonoBehaviour
     public float gravity;
     public LayerMask ground;
 
+    [Space, Header("Animations & Effects")]
+    public GameObject landEffect;
+    public AudioSource landSource;
+    public AudioClip[] landClips;
+    public AudioSource jumpSource;
+    public AudioClip[] jumpSounds;
+    public GameObject[] jumpEffects;
+    public GameObject[] leftStepEffects;
+    public GameObject[] rightStepEffects;
+    public AudioSource footstepSource;
+    public AudioClip[] footsteps;
+
     float speed;
     float horizontal;
     float vertical;
@@ -38,9 +50,13 @@ public class PlayerMovement : MonoBehaviour
     bool isSprinting;
     int jumpCount;
 
+    int leftStepCount;
+    int rightStepCount;
+
     Rigidbody rb;
     Animator anim;
     Vector3 currentVelocity;
+
     public static bool inAir;
 
     private void Start()
@@ -119,20 +135,24 @@ public class PlayerMovement : MonoBehaviour
 
     void CheckGround()
     {
-        inAir = !Grounded();
-        anim.SetBool("InAir", inAir);
         if (!Grounded())
         {
             Fall();
         }
         else
         {
-            if (jumpCount > 1)
+            if (inAir)
             {
+                landEffect.SetActive(true);
+                landSource.PlayOneShot(landClips[Random.Range(0, landClips.Length)]);
+
                 jumpCount = 0;
                 anim.ResetTrigger("Jump");
             }
         }
+
+        inAir = !Grounded();
+        anim.SetBool("InAir", inAir);
     }
 
     void Rotate()
@@ -158,7 +178,12 @@ public class PlayerMovement : MonoBehaviour
                 anim.SetTrigger("Jump");
             }
 
+            jumpEffects[jumpCount].SetActive(true);
+            jumpSource.PlayOneShot(jumpSounds[Random.Range(0, jumpSounds.Length)]);
             jumpCount++;
+
+            if (jumpCount > 3)
+                jumpCount = 1;
 
             switch(jumpCount)
             {
@@ -178,6 +203,27 @@ public class PlayerMovement : MonoBehaviour
     void Fall()
     {
         rb.velocity += Physics.gravity * gravity * Time.fixedDeltaTime;
+    }
+
+    public void Step(int foot)
+    {
+        if(foot == 0)
+        {
+            leftStepEffects[leftStepCount].SetActive(true);
+            leftStepCount++;
+
+            if (leftStepCount >= 3)
+                leftStepCount = 0;
+        }
+        else
+        {
+            rightStepEffects[rightStepCount].SetActive(true);
+            rightStepCount++;
+
+            if (rightStepCount >= 3)
+                rightStepCount = 0;
+        }
+        footstepSource.PlayOneShot(footsteps[Random.Range(0, footsteps.Length)]);
     }
 
     bool Grounded()

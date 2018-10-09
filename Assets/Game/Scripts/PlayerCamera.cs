@@ -25,6 +25,7 @@ public class PlayerCamera : MonoBehaviour
         player = GameObject.Find("Player").transform;
 
         offset = new Vector3(player.position.x + cameraOffset.x, player.position.y + cameraOffset.y, player.position.z + cameraOffset.z);
+        transform.SetParent(null);
     }
 
     private void LateUpdate()
